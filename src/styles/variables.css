@@ -1,0 +1,24 @@
+:root {
+    /* Kleuren – Light Mode */
+    --color-primary: #35495e;
+    --color-secondary: #41b883;
+    --color-bg: linear-gradient(315deg, #1b1b1b, #353535);
+    --color-bg-fallback: #353535;
+    --color-title: #1F2937;
+    --color-text: #374151;
+    --color-subtext: #6B7280;
+
+    /* Icons */
+    --color-fav: #EF4444;
+    --color-rating: #FACC15;
+
+    /* Lettertype */
+    --font-main: 'Montserrat Variable', sans-serif;
+    --h1: clamp(1.7rem, 7vw, 2rem);
+    --h2: 1.4rem;
+    --body: 1.1rem;
+    --subtext: 0.875rem;
+
+    /* Layout */
+    --radius: 15px;
+}
