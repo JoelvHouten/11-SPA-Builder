@@ -9,9 +9,11 @@ import "./styles/animations.css";
 import "@fortawesome/fontawesome-free/css/all.css";
 import "@fontsource-variable/roboto-mono";
 import "@fontsource-variable/montserrat";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
-App.use(createPinia());
+const pinia = createPinia();
+const app = createApp(App);
+
+app.use(pinia);
+app.mount("#app");
 
 createApp(App).use(router).mount("#app");
