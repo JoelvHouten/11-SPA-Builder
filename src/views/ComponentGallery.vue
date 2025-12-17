@@ -68,6 +68,7 @@ function prev() {
 			<div class="page__title">
 				<img class="page__title--logo" src="../assets/images/vue-logo.png" />
 				<h1 class="page__title--text">Component Library</h1>
+        <a href="/LessonDemo">Lessondemo</a>
 			</div>
 		</header>
 		<div class="gallery fade-in" :key="active.name">
