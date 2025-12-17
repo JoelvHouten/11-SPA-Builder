@@ -1,12 +1,13 @@
-import { createMemoryHistory, createRouter } from "vue-router";
+import { createRouter, createWebHistory } from 'vue-router'
+import ComponentGallery from '@/views/ComponentGallery.vue'
+import TestStore from './paginas/TestStore.vue'
 
-import ComponentGallery from "./views/ComponentGallery.vue";
+const routes = [
+  { path: '/', component: ComponentGallery },
+  { path: '/test-store', component: TestStore }
+]
 
-const routes = [{ path: "/", component: ComponentGallery }];
-
-export const router = createRouter({
-	history: createMemoryHistory(),
-	routes,
-});
-
-export default router;
+export default createRouter({
+  history: createWebHistory(),
+  routes
+})
