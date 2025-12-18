@@ -56,13 +56,13 @@ const items = ref<Card[]>([
   &__grid {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 0.5rem;
   }
 
   &__card {
     width: 100%;
     box-sizing: border-box;
-    padding: 0 1rem;
+    padding: 0 0.5rem;
 
     @media (max-width: 767px) {
       padding: 0 0.5rem;
