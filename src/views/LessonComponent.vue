@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
+import BasicButton from "../components/Basic/BasicButton.vue";
+
 
 const props = defineProps({
   title: { type: String, default: "Lesson Title" },
@@ -69,17 +71,16 @@ function selectAnswer(idx: number) {
         <h2 class="lesson__question-title">Question</h2>
         <p class="lesson__question-body">{{ question }}</p>
         <div class="lesson__answers" role="list">
-          <button
+          <BasicButton
             v-for="(label, idx) in labels"
             :key="idx"
+            :label="label"
             class="lesson__answer"
             :class="{ 'lesson__answer--selected': selected === idx }"
             @click="selectAnswer(idx)"
             role="listitem"
             :aria-pressed="selected === idx"
-          >
-            <span class="lesson__answer-label">{{ label }}</span>
-          </button>
+          />
         </div>
       </div>
     </section>
