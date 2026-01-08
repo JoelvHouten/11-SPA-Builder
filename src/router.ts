@@ -1,9 +1,10 @@
 import { createMemoryHistory, createRouter } from "vue-router";
 
 import ComponentGallery from "./views/ComponentGallery.vue";
-import LessonDemo from "@/views/LessonDemo.vue";
+import LessonComponent from "./views/LessonComponent.vue";
 
-const routes = [{ path: "/", component: LessonDemo }];
+const routes = [{ path: "/", component: ComponentGallery }, 
+				{ path: "/lesson", component: LessonComponent },];
 
 export const router = createRouter({
 	history: createMemoryHistory(),

@@ -1,7 +1,7 @@
 import { createApp } from "vue";
 import { createPinia } from "pinia";
 import App from "./App.vue";
-import router from "./router.ts";
+import router from "./router";
 
 import "./styles/main.css";
 import "./styles/variables.css";
@@ -10,10 +10,12 @@ import "@fortawesome/fontawesome-free/css/all.css";
 import "@fontsource-variable/roboto-mono";
 import "@fontsource-variable/montserrat";
 
-const pinia = createPinia();
+
 const app = createApp(App);
+const pinia = createPinia();
 
 app.use(pinia);
+app.use(router)
 app.mount("#app");
 
-createApp(App).use(router).mount("#app");
+
