@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useLessenStore } from '../stores/lessenStore'
+import { useLessenStore } from '../stores/lessonStore'
 import { onMounted } from 'vue'
 import BasicButton from '../components/Basic/BasicButton.vue'
 
