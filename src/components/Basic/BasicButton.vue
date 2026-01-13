@@ -23,7 +23,7 @@ const buttonClass = computed(() => `button__${props.variant}`)
 </template>
 
 <style lang="scss" scoped>
-.button {
+button {
     align-items: center;
     appearance: none;
     border: 0;
