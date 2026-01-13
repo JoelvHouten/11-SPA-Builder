@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import BasicButton from "../components/Basic/BasicButton.vue";
-
+import Hero from "../components/blocks/headimage.vue";
 
 const props = defineProps({
   title: { type: String, default: "Lesson Title" },
@@ -20,18 +20,14 @@ const props = defineProps({
 });
 
 const emit = defineEmits<{
-  edit: [];
-  answer: [{ index: number; label: string }];
+  (e: 'edit'): void;
+  (e: 'answer', payload: { index: number; label: string }): void;
 }>();
 const selected = ref<number | null>(null);
 
 const labels = computed(() =>
   Array.from({ length: props.answersCount }, (_, i) => String.fromCharCode(65 + i))
 );
-
-const heroStyle = computed(() => {
-  return { backgroundColor: "#61bafa" } as Record<string, string>;
-});
 
 function onEdit() {
   emit("edit");
@@ -48,14 +44,14 @@ function selectAnswer(idx: number) {
 
 <template>
   <main class="lesson">
-    <section class="lesson__hero" :style="heroStyle">
-      <div class="lesson__hero-overlay">
-        <h1 class="lesson__title">{{ title }}</h1>
+    <!-- Hero block (image + title) -->
+    <component :is="Hero" :title="title">
+      <template #overlay-actions>
         <button class="lesson__edit-btn" @click="onEdit" aria-label="Edit lesson">
           <i class="fa fa-edit" aria-hidden="true"></i>
         </button>
-      </div>
-    </section>
+      </template>
+    </component>
 
     <section class="lesson__content">
       <div class="lesson__block lesson__block--lesson">
