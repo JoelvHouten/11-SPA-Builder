@@ -10,6 +10,7 @@ import "@fortawesome/fontawesome-free/css/all.css";
 import "@fontsource-variable/roboto-mono";
 import "@fontsource-variable/montserrat";
 
+
 const app = createApp(App);
 const pinia = createPinia();
 
