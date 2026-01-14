@@ -1,25 +1,24 @@
 html, body {
 	margin: 0;
 	min-height: 100%;
-	background: url("../assets/images/pattern.png") repeat,
-				var(--color-bg, var(--color-bg-fallback));
-	background-repeat: repeat, no-repeat;
-	background-size: 500px 575px, cover;
+	background: var(--color-bg, var(--color-bg-fallback)); /* url("../assets/images/pattern.png") repeat, */
+	/* background-repeat: repeat, no-repeat;
+	background-size: 500px 575px, cover; */
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
 }
 
 body {
 	min-height: 100%;
     margin: 0;
+	font-family: var(--font-main);
 }
 
 h1 {
 	font-family: var(--font-main);
 	font-size: var(--h1);
-	background: var(--color-secondary);
-	background: -webkit-linear-gradient(50deg,#41b883 45%,#35495e 50%);
-  	background-size: 300% 300%;
-  	animation: gradientMove 60s ease infinite;
-  	color: transparent;
-  	-webkit-background-clip: text;
-    background-clip: text;
 }
