@@ -3,10 +3,10 @@ import { ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import BasicButton from "../components/Basic/BasicButton.vue";
 import Hero from "../components/blocks/headimage.vue";
-import { useLessenStore } from "../stores/lessonStore";
+import { useLessonStore } from "../stores/lessonStore";
 
 const router = useRouter();
-const store = useLessenStore();
+const store = useLessonStore();
 store.load(); // ensure we have persisted lessons available
 
 // Form state
@@ -268,9 +268,9 @@ $text-color: #fdfdfd;
     border-radius: 8px;
 
     &--lesson {
-      .lesson__text { 
-            color: $text-color; 
-            margin: 0; 
+      .lesson__text {
+            color: $text-color;
+            margin: 0;
         }
     }
 
@@ -286,14 +286,14 @@ $text-color: #fdfdfd;
     }
 
     &--question {
-      
+
         .lesson__question-title {
             margin: 0 0 8px 0;
-            font-size: 1rem; 
+            font-size: 1rem;
         }
         .lesson__question-body {
             margin: 0 0 12px 0;
-            color: $text-color; 
+            color: $text-color;
         }
 
         .lesson__answers {

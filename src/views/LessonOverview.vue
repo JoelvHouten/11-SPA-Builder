@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { onMounted } from "vue"
-import { useLessenStore } from "@/stores/lessenStore"
+import { useLessonStore } from "@/stores/lessonStore"
 import LessonCard from "@/components/LessonCard.vue"
 import Modal from "@/components/Medium/MediumModal.vue"
 import BaseButton from "@/components/Basic/BasicButton.vue"
 import { useRouter } from "vue-router"
 
-const store = useLessenStore()
+const store = useLessonStore()
 const router = useRouter()
 
 onMounted(() => {
@@ -14,16 +14,12 @@ onMounted(() => {
 })
 
 function createLesson() {
-  const id = store.maakLes()
-  router.push(`/lessons/${id}/edit`)
+  const tempId = crypto.randomUUID()
+  router.push({ name: 'lesson', params: { id: tempId }, query: { new: '1' } })
 }
 
-function editLesson(id: string) {
-  router.push(`/lessons/${id}/edit`)
-}
-
-function viewLesson(id: string) {
-  router.push(`/lessons/${id}`)
+function openLesson(id: string) {
+  router.push({ name: 'lesson', params: { id } })
 }
 </script>
 
@@ -34,18 +30,16 @@ function viewLesson(id: string) {
 
       <Modal triggerText="+ New lesson">
         <h3>Create new lesson</h3>
-
         <BaseButton label="Create lesson" @click="createLesson" />
       </Modal>
     </header>
 
     <section class="lesson-overview__grid">
       <LessonCard
-        v-for="lesson in store.lessen"
+        v-for="lesson in store.lessons"
         :key="lesson.id"
         :lesson="lesson"
-        @view="viewLesson"
-        @edit="editLesson"
+        @click="openLesson(lesson.id)"
       />
     </section>
   </main>
@@ -55,14 +49,12 @@ function viewLesson(id: string) {
 .lesson-overview {
   padding: 24px;
 }
-
 .lesson-overview__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 24px;
 }
-
 .lesson-overview__grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));

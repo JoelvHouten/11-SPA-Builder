@@ -1,16 +1,29 @@
-import { createMemoryHistory, createRouter } from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
+import LessonOverview from "@/views/LessonOverview.vue";
+import LessonComponent from "@/views/LessonComponent.vue";
+import ComponentGallery from "@/views/ComponentGallery.vue";
 
-import ComponentGallery from "./views/ComponentGallery.vue";
-import LessonComponent from "./views/LessonComponent.vue";
-import LessonCreate from "./views/LessonCreate.vue";
+const routes = [
+  // {
+  //   path: "/",
+  //   name: "overview",
+  //   component: LessonOverview,
+  // },
+  {
+    path: "/",
+    name: "overview",
+    component: ComponentGallery,
+  },
+  {
+    path: "/lessons/:id",
+    name: "lesson",
+    component: LessonComponent,
+  },
+];
 
-const routes = [{ path: "/", component: ComponentGallery }, 
-				{ path: "/lesson", component: LessonComponent },
-			 	{ path: "/lesson/create", component: LessonCreate }];
-
-export const router = createRouter({
-	history: createMemoryHistory(),
-	routes,
+const router = createRouter({
+  history: createWebHistory(),
+  routes,
 });
 
 export default router;
