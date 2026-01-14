@@ -11,12 +11,14 @@ const props = defineProps({
 
 const visible = ref(true)
 
+const emit = defineEmits<{ (e: 'click', ev: MouseEvent): void }>();
+
 const buttonClass = computed(() => `button__${props.variant}`)
 </script>
 
 <template>
     <transition name="fade">
-        <button v-if="visible" :type="props.variant" :class="['button', buttonClass]">
+        <button v-if="visible" :type="props.variant" :class="['button', buttonClass]" v-bind="$attrs" @click="(e) => emit('click', e)">
             {{ props.label }}
         </button>
     </transition>

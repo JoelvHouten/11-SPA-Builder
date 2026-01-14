@@ -11,8 +11,10 @@ import "@fontsource-variable/roboto-mono";
 import "@fontsource-variable/montserrat";
 
 const app = createApp(App);
+const pinia = createPinia();
 
-app.use(createPinia());
-app.use(router);
-
+app.use(pinia);
+app.use(router)
 app.mount("#app");
+
+

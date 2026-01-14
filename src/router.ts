@@ -1,17 +1,19 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Home from "./views/Home.vue";
 
-const routes = [
-    {
-        path: "/",
-        name: "home",
-        component: Home,
-    },
-];
+import ComponentGallery from "./views/ComponentGallery.vue";
+import LessonComponent from "./views/LessonComponent.vue";
+import LessonCreate from "./views/LessonCreate.vue";
+import LessonOverview from "./views/LessonOverview.vue";
 
-const router = createRouter({
-    history: createWebHistory(),
-    routes,
+const routes = [{ path: "/", component: LessonOverview }, 
+				{ path: "/lesson", component: LessonComponent },
+			 	{ path: "/lesson/create", component: LessonCreate },
+			    { path: "/lessons", component: LessonOverview }
+			];
+
+export const router = createRouter({
+	history: createWebHistory(),
+	routes,
 });
 
 export default router;
