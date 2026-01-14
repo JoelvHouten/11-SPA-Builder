@@ -1,4 +1,4 @@
-import { createMemoryHistory, createRouter } from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 
 import ComponentGallery from "./views/ComponentGallery.vue";
 import LessonComponent from "./views/LessonComponent.vue";
@@ -12,7 +12,7 @@ const routes = [{ path: "/", component: LessonOverview },
 			];
 
 export const router = createRouter({
-	history: createMemoryHistory(),
+	history: createWebHistory(),
 	routes,
 });
 
