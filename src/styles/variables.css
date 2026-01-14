@@ -14,7 +14,7 @@
 
     /* Lettertype */
     --font-main: 'Montserrat Variable', sans-serif;
-    --h1: clamp(2.5rem, 7vw, 2.5rem);
+    --h1: clamp(1.7rem, 7vw, 2rem);
     --h2: 1.4rem;
     --body: 1.1rem;
     --subtext: 0.875rem;
