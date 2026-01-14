@@ -33,6 +33,7 @@ const emit = defineEmits<{
   background: #2f2f2f;
   padding: 16px;
   border-radius: 8px;
+  color:white;
 }
 
 .lesson-card__actions {
