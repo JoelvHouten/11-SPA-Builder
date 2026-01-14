@@ -41,7 +41,7 @@ function openLesson(id: string) {
         :lesson="lesson"
         @click="openLesson(lesson.id)"
       />
-    </div>
+    </section>
   </main>
 </template>
 
