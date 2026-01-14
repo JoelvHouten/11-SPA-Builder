@@ -1,66 +1,65 @@
 <template>
-  <TransitionGroup name="draggable-list" tag="div" class="draggable-list">
-    <div v-if="adminStore.isAdminMode" key="edit-toggle" class="draggable-list__toggle">
+  <div class="draggable-grid">
+    <div v-if="adminStore.isAdminMode" class="draggable-grid__toggle">
       <button
-        class="draggable-list__edit-btn"
-        :class="{ 'draggable-list__edit-btn--active': editMode }"
+        class="draggable-grid__edit-btn"
+        :class="{ 'draggable-grid__edit-btn--active': editMode }"
         @click="editMode = !editMode"
       >
         {{ editMode ? '✓ Done Reordering' : '↕ Reorder Items' }}
       </button>
     </div>
 
-    <div
-      v-for="(item, index) in modelValue"
-      :key="getKey(item, index)"
-      class="draggable-list__item"
-      :class="{
-        'draggable-list__item--dragging': isDragging && draggingIndex === index,
-        'draggable-list__item--placeholder': isDragging && placeholderIndex === index && index !== draggingIndex,
-        'draggable-list__item--editable': editMode && !isDragging
-      }"
-      :data-drag-index="index"
-      @pointerdown="editMode ? handlePointerDown(index, $event) : undefined"
-    >
-      <slot :item="item" :index="index" />
-    </div>
+    <TransitionGroup name="draggable-list" tag="div" class="draggable-grid__items">
+      <div
+        v-for="index in itemCount"
+        :key="index"
+        class="draggable-grid__item"
+        :class="{
+          'draggable-grid__item--dragging': isDragging && draggingIndex === index - 1,
+          'draggable-grid__item--placeholder': isDragging && placeholderIndex === index - 1 && index - 1 !== draggingIndex,
+          'draggable-grid__item--editable': editMode && !isDragging
+        }"
+        :data-drag-index="index - 1"
+        @pointerdown="editMode ? handlePointerDown(index - 1, $event) : undefined"
+      >
+        <slot name="item" :index="index - 1" />
+      </div>
+    </TransitionGroup>
 
     <Teleport to="body">
       <div
-        v-if="isDragging && draggingItem !== undefined"
-        class="draggable-list__ghost"
+        v-if="isDragging && draggingIndex !== null"
+        class="draggable-grid__ghost"
         :style="{
           left: `${cursorPosition.x - offset.x}px`,
           top: `${cursorPosition.y - offset.y}px`,
           width: `${ghostWidth}px`
         }"
       >
-        <slot name="ghost" :item="draggingItem">
-          <slot :item="draggingItem" :index="draggingIndex" />
+        <slot name="ghost" :index="draggingIndex">
+          <slot name="item" :index="draggingIndex" />
         </slot>
       </div>
     </Teleport>
-  </TransitionGroup>
+  </div>
 </template>
 
-<script setup lang="ts" generic="T">
-import { computed, ref, watch } from 'vue'
+<script setup lang="ts">
+import { ref, watch, computed } from 'vue'
 import { useDraggableList } from '@/Composables/useDrag.ts'
 import { useAdminStore } from '@/stores/adminStore'
 
 const adminStore = useAdminStore()
 
 interface Props {
-  modelValue: T[]
-  itemKey?: (item: T, index: number) => string | number
+  itemCount: number
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  itemKey: (_, index) => index
-})
+const props = defineProps<Props>()
 
 const emit = defineEmits<{
-  'update:modelValue': [value: T[]]
+  'reorder': [payload: { from: number; to: number }]
 }>()
 
 const offset = ref({ x: 0, y: 0 })
@@ -74,21 +73,19 @@ watch(() => adminStore.isAdminMode, (isAdmin) => {
   }
 })
 
-const itemsRef = computed(() => props.modelValue)
-const drag = useDraggableList(itemsRef)
+// Create a dummy array for the composable (it just needs to track count)
+const dummyItems = computed(() => ({ value: Array(props.itemCount).fill(null) }))
+
+// Use the composable for drag state management
+const drag = useDraggableList(dummyItems)
 const {
   isDragging,
   draggingIndex,
-  draggingItem,
   placeholderIndex,
   cursorPosition,
   startDrag,
   endDrag
 } = drag
-
-function getKey(item: T, index: number) {
-  return props.itemKey(item, index)
-}
 
 function handlePointerDown(index: number, e: PointerEvent) {
   if (!editMode.value) return
@@ -118,20 +115,23 @@ function handlePointerDown(index: number, e: PointerEvent) {
 function handleDrop() {
   const result = endDrag()
 
+  // Just emit the indices - don't manipulate any data
   if (!result || result.from === null || result.to === null) return
   if (result.from === result.to) return
 
-  const newArray = [...props.modelValue]
-  const [item] = newArray.splice(result.from, 1)
-  newArray.splice(result.to, 0, item)
-
-  emit('update:modelValue', newArray)
+  emit('reorder', {
+    from: result.from,
+    to: result.to
+  })
 }
 </script>
 
 <style scoped lang="scss">
-.draggable-list {
-  display: contents;
+.draggable-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
 
   &__toggle {
     width: 100%;
@@ -160,6 +160,12 @@ function handleDrop() {
         background: #157347;
       }
     }
+  }
+
+  &__items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
   }
 
   &__item {
@@ -195,10 +201,10 @@ function handleDrop() {
     opacity: 0.9;
     filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
   }
+}
 
-  &-move {
-    transition: transform 0.3s ease;
-  }
+.draggable-list-move {
+  transition: transform 0.3s ease;
 }
 
 @keyframes wiggle {
