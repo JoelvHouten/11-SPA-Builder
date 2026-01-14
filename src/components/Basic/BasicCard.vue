@@ -36,6 +36,7 @@ const props = withDefaults(defineProps<Props>(), {
         <p v-if="props.innerText" class="basic-card__text">
           {{ props.innerText }}
         </p>
+        <slot></slot>
       </div>
     </article>
   </transition>
