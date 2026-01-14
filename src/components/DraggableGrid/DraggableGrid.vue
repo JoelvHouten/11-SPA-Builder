@@ -13,7 +13,7 @@
     <TransitionGroup name="draggable-list" tag="div" class="draggable-grid__items">
       <div
         v-for="index in itemCount"
-        :key="index"
+        :key="props.itemKeys ? props.itemKeys[index - 1] : index"
         class="draggable-grid__item"
         :class="{
           'draggable-grid__item--dragging': isDragging && draggingIndex === index - 1,
@@ -54,6 +54,7 @@ const adminStore = useAdminStore()
 
 interface Props {
   itemCount: number
+  itemKeys?: string[]   // new optional prop
 }
 
 const props = defineProps<Props>()

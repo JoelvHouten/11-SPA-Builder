@@ -1,144 +1,149 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import BasicButton from "../components/Basic/BasicButton.vue";
-import Hero from "../components/blocks/headimage.vue";
-import DraggableGrid from "@/components/DraggableGrid/DraggableGrid.vue";
-import BasicCard from "@/components/Basic/BasicCard.vue";
-import MultipleChoice from "@/components/MultipleChoice.vue";
+import { reactive, computed, onMounted } from "vue"
+import { useRoute, useRouter } from "vue-router"
+import Hero from "../components/blocks/headimage.vue"
+import DraggableGrid from "@/components/DraggableGrid/DraggableGrid.vue"
+import BasicCard from "@/components/Basic/BasicCard.vue"
+import MultipleChoice from "@/components/MultipleChoice.vue"
 import { useAdminStore } from '@/stores/adminStore'
+import { useLessonStore, Lesson } from '@/stores/lessonStore'
 
+const lessonStore = useLessonStore()
 const adminStore = useAdminStore()
+const route = useRoute()
+const router = useRouter()
 
-interface Card {
-  title: string
-  innerText: string
-  img?: string
+const lessonId = String(route.params.id ?? '')
+const isNewDraft = route.query.new === '1'
+
+onMounted(() => lessonStore.load())
+
+const local = reactive<Lesson>({
+  id: lessonId || crypto.randomUUID(),
+  title: 'Untitled lesson',
+  blocks: []
+})
+
+// initialize local draft
+function initLocal() {
+  const existing = lessonStore.getLessonById(lessonId)
+  if (existing && !isNewDraft) {
+    Object.assign(local, JSON.parse(JSON.stringify(existing)))
+  }
+}
+initLocal()
+
+const blocks = computed(() => local.blocks)
+const lessonTitle = computed(() => local.title)
+
+function addTextBlock() {
+  local.blocks.push({
+    id: crypto.randomUUID(),
+    title: 'New block',
+    text: 'Edit me'
+  })
 }
 
-const quizzes = ref([
-  {
-    question: 'What is the capital of France?',
-    options: ['London', 'Paris', 'Berlin', 'Madrid'],
-    correctAnswer: 1
-  }
-])
-
-const items = ref<Card[]>([
-  {
-    title: 'Les titel',
-    innerText: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam convallis, quam eu sagittis consequat, nisl eros feugiat sapien, quis congue tellus urna ut sem.'
-  },
-  {
-    title: 'JEP',
-    innerText: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam convallis, quam eu sagittis consequat, nisl eros feugiat sapien, quis congue tellus urna ut sem.'
-  },
-  {
-    title: 'Ja nog een',
-    innerText: 'According to all known laws of aviation, there is no way a bee should be able to fly. Its wings are too small to get its fat little body off the ground. The bee, of course, flies anyway because bees don\'t care what humans think is impossible. Yellow, black. Yellow, black. Yellow, black. Yellow, black. Ooh, black and yellow! Let\'s shake it up a little. Barry! Breakfast is ready! Coming! Hang on a second. Hello? - Barry? - Adam? - Can you believe this is happening? - I can\'t. I\'ll pick you up. Looking sharp. Use the stairs. Your father paid good money for those. Sorry. I\'m excited. Here\'s the graduate. We\'re very proud of you, son. A perfect report card, all B\'s. Very proud. Ma! I got a thing going here. - You got lint on your fuzz. - Ow! That\'s me! - Wave to us! We\'ll be in row 118,000. - Bye! Barry, I told you, stop flying in the house! - Hey, Adam. - Hey, Barry. - Is that fuzz gel? - A little. Special day, graduation. Never thought I\'d make it. Three days grade school, three days high school. Those were awkward. Three days college. I\'m glad I took a day and hitchhiked around the hive. You did come back different. - Hi, Barry. - Artie, growing a mustache? Looks good. - Hear about Frankie? - Yeah. - You going to the funeral? - No, I\'m not going. Everybody knows, sting someone, you die. Don\'t waste it on a squirrel. Such a hothead. I guess he could have just gotten out of the way. I love this incorporating an amusement park into our day. That\'s why we don\'t need vacations. Boy, quite a bit of pomp... under the circumstances. - Well, Adam, today we are men. - We are! - Bee-men. - Amen! Hallelujah!'
-  }
-])
-
-const props = defineProps({
-  title: { type: String, default: "Lesson Title" },
-  lessonText: {
-    type: String,
-    default: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor.",
-  },
-  taskText: {
-    type: String,
-    default: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean commodo ligula eget dolor.",
-  },
-  question: { type: String, default: "Which option is correct?" },
-  answersCount: { type: Number, default: 4 },
-});
-
-const emit = defineEmits<{
-  (e: 'edit'): void;
-  (e: 'answer', payload: { index: number; label: string }): void;
-}>();
-
-const selected = ref<number | null>(null);
-
-const labels = computed(() =>
-  Array.from({ length: props.answersCount }, (_, i) => String.fromCharCode(65 + i))
-);
-
-function onEdit() {
-  emit("edit");
+function removeBlock(index: number) {
+  local.blocks.splice(index, 1)
 }
 
-function selectAnswer(idx: number) {
-  selected.value = idx;
-  const label = labels.value[idx];
-  if (label !== undefined) {
-    emit("answer", { index: idx, label });
-  }
+function updateBlockText(index: number, text: string) {
+  const b = local.blocks[index]
+  if (!b) return
+  b.text = text
 }
 
 function handleReorder({ from, to }: { from: number; to: number }) {
-  const newItems = [...items.value]
-  const [movedItem] = newItems.splice(from, 1)
-  newItems.splice(to, 0, movedItem)
-  items.value = newItems
-  console.log("items: ")
-  console.log(items.value)
+  if (from === to) return
+  const newBlocks = [...local.blocks]
+  const [moved] = newBlocks.splice(from, 1)
+  if (!moved) return
+  newBlocks.splice(to, 0, moved)
+  local.blocks = newBlocks
+}
+
+function saveLesson() {
+  lessonStore.saveLesson(JSON.parse(JSON.stringify(local)))
+  // alert("Lesson saved!")
 }
 </script>
 
 <template>
   <main class="lesson">
-    <!-- Hero block (image + title) -->
-    <component :is="Hero" :title="title">
+    <component :is="Hero" :title="lessonTitle">
       <template #overlay-actions>
-        <button class="lesson__edit-btn" @click="onEdit" aria-label="Edit lesson">
-          <i class="fa fa-edit" aria-hidden="true"></i>
+        <button
+          class="admin-toggle lesson__edit-btn"
+          :class="{ 'admin-toggle--active': adminStore.isAdminMode }"
+          @click="adminStore.toggleAdminMode()"
+        >
+          <i class="fa fa-edit"></i>
+          {{ adminStore.isAdminMode ? 'Admin' : 'Admin' }}
+        </button>
+
+        <button
+          v-if="adminStore.isAdminMode"
+          @click="saveLesson"
+          style="margin-left:12px; background:#0d6efd; color:white; border:none; padding:0.5rem 1rem; border-radius:6px; cursor:pointer;"
+        >
+          Save Lesson
         </button>
       </template>
     </component>
 
     <section class="lesson__content">
-      <div class="lesson__block lesson__block--lesson">
-        <p class="lesson__text">{{ lessonText }}</p>
-      </div>
-
-      <div class="lesson__block lesson__block--task">
-        <h2 class="lesson__task-title">Task</h2>
-        <p class="lesson__task-text">{{ taskText }}</p>
-      </div>
-
-      <button
-        class="admin-toggle"
-        :class="{ 'admin-toggle--active': adminStore.isAdminMode }"
-        @click="adminStore.toggleAdminMode()"
-      >
-        {{ adminStore.isAdminMode ? 'Admin' : 'Admin' }}
-      </button>
+      <p>Admin mode: {{ adminStore.isAdminMode }}</p>
 
       <div class="page__wrapper">
         <DraggableGrid
-          :item-count="items.length"
+          :item-count="blocks.length"
+          :item-keys="blocks.map(b => b.id)"
           @reorder="handleReorder"
           class="page__grid"
         >
           <template #item="{ index }">
             <BasicCard
-              :title="items[index].title"
-              :innerText="items[index].innerText"
-              :img="items[index]?.img"
+              :key="blocks[index].id"
+              :title="blocks[index].title"
             >
+              <div v-if="adminStore.isAdminMode">
+          <textarea
+            v-model="blocks[index].text"
+            rows="3"
+            style="width:100%; margin-bottom:8px;"
+          />
+                <button @click="removeBlock(index)">Delete</button>
+              </div>
+              <div v-else>
+                <p>{{ blocks[index].text }}</p>
+              </div>
+
               <MultipleChoice
-                v-model:question="quizzes[0].question"
-                :options="quizzes[0].options"
-                v-model:correct-answer="quizzes[0].correctAnswer"
-                group-name="geography-q1"
+                v-if="blocks[index].multipleChoice"
+                v-model:question="blocks[index].multipleChoice.question"
+                :options="blocks[index].multipleChoice.options"
+                v-model:correct-answer="blocks[index].multipleChoice.correctAnswerIndex"
               />
             </BasicCard>
           </template>
         </DraggableGrid>
+
+        <!-- Add Block button -->
+        <div
+          v-if="adminStore.isAdminMode"
+          class="add-block-wrapper"
+        >
+          <div class="add-block" @click="addTextBlock">
+            +
+          </div>
+        </div>
       </div>
+
     </section>
   </main>
 </template>
+
 
 <style lang="scss" scoped>
 $bg: #2e2e2e;
@@ -150,7 +155,9 @@ $text-color: #fdfdfd;
 
 .page__wrapper {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
 .page__grid {
@@ -161,8 +168,8 @@ $text-color: #fdfdfd;
 .admin-toggle {
   margin-top: 1rem;
   padding: 0.5rem 1.25rem;
-  background: #6c757d;
-  color: white;
+  color: #d75e5e;
+  background: #ffffff;
   border: none;
   border-radius: 8px;
   font-size: 1rem;
@@ -171,17 +178,49 @@ $text-color: #fdfdfd;
   transition: all 0.2s ease;
 
   &:hover {
-    background: #5a6268;
+    background: #d5d5d5;
   }
 
   &--active {
     background: #198754;
+    color: white;
+
 
     &:hover {
       background: #157347;
     }
   }
 }
+.add-block-wrapper {
+  margin-top: 12px;
+  width: 100%;
+  max-width: 50rem;
+}
+
+.add-block {
+  // reuse card style
+  background: $block-bg;
+  border: 1px solid $border;
+  border-radius: 8px;
+  width: 100%;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: #ffffff;
+  cursor: pointer;
+  border: 2px dashed #a6a6a6;
+  text-align: center;
+  user-select: none;
+  transition: background 0.2s;
+
+  &:hover {
+    background: rgba(66, 66, 66, 0.84);
+  }
+}
+
+
 
 .lesson {
   display: block;
@@ -224,9 +263,7 @@ $text-color: #fdfdfd;
 
     & .lesson__edit-btn {
       margin-left: auto;
-      background: rgba(255, 255, 255, 0.15);
       border: 1px solid rgba(255, 255, 255, 0.25);
-      color: #d75e5e;
       padding: 6px 10px;
       border-radius: 6px;
       cursor: pointer;

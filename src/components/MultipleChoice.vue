@@ -105,16 +105,13 @@ const emit = defineEmits<{
   'update:correctAnswer': [value: number]
 }>()
 
-// Quiz state
 const selectedAnswer = ref<number | null>(null)
 const showResult = ref(false)
 
-// Edit state
 const isEditing = ref(false)
 const editableQuestion = ref(props.question)
 const editableCorrectAnswer = ref(props.correctAnswer)
 
-// Reference the same array - no spread
 const editableOptions = ref(props.options)
 
 const isCorrect = computed(() => selectedAnswer.value === editableCorrectAnswer.value)
@@ -142,7 +139,6 @@ function removeOption(index: number) {
   }
 }
 
-// Sync when props change from parent
 watch(() => props.question, (newVal) => {
   editableQuestion.value = newVal
 })
@@ -151,20 +147,17 @@ watch(() => props.correctAnswer, (newVal) => {
   editableCorrectAnswer.value = newVal
 })
 
-// When exiting edit mode, emit updates for primitives only
 watch(isEditing, (editing, wasEditing) => {
   if (wasEditing && !editing) {
     selectedAnswer.value = null
     showResult.value = false
 
-    // Emit updates for question and correctAnswer
     if (editableQuestion.value !== props.question) {
       emit('update:question', editableQuestion.value)
     }
     if (editableCorrectAnswer.value !== props.correctAnswer) {
       emit('update:correctAnswer', editableCorrectAnswer.value)
     }
-    // Array changes are already reflected in parent (same reference)
   }
 })
 
