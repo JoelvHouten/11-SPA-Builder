@@ -14,8 +14,8 @@ onMounted(() => {
 })
 
 function createLesson() {
-  const tempId = crypto.randomUUID()
-  router.push({ name: 'lesson', params: { id: tempId }, query: { new: '1' } })
+  const id = store.createLesson()
+  router.push({ name: 'lesson', params: { id }, query: { new: '1' } })
 }
 
 function openLesson(id: string) {
