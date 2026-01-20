@@ -30,7 +30,7 @@ const emit = defineEmits<{
 
 <style scoped>
 .lesson-card {
-  background: #2f2f2f;
+  background: #ffffff;
   padding: 16px;
   border-radius: 8px;
 }

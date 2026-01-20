@@ -5,42 +5,38 @@ interface Props {
   img?: string
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  title: '',
-  innerText: '',
-  img: ''
-})
+defineProps<Props>()
 </script>
 
 <template>
   <transition name="fade">
-    <article
-      class="basic-card"
-      v-if="props.title || props.innerText || props.img"
-      aria-labelledby="card-title"
-    >
+    <article class="basic-card">
       <img
-        v-if="props.img"
-        :src="props.img"
-        :alt="props.title ? props.title : ''"
+        v-if="img"
+        :src="img"
+        :alt="title || ''"
         class="basic-card__img"
       />
+
       <div class="basic-card__body">
         <h3
+          v-if="title"
           id="card-title"
-          v-if="props.title"
           class="basic-card__title"
         >
-          <b>{{ props.title }}</b>
+          <b>{{ title }}</b>
         </h3>
-        <p v-if="props.innerText" class="basic-card__text">
-          {{ props.innerText }}
+
+        <p v-if="innerText" class="basic-card__text">
+          {{ innerText }}
         </p>
-        <slot></slot>
+
+        <slot />
       </div>
     </article>
   </transition>
 </template>
+
 
 <style lang="scss" scoped>
 .basic-card {

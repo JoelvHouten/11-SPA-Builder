@@ -1,71 +1,108 @@
 <script setup lang="ts">
-import { reactive, computed, onMounted } from "vue"
-import { useRoute, useRouter } from "vue-router"
-import Hero from "../components/blocks/headimage.vue"
-import DraggableGrid from "@/components/DraggableGrid/DraggableGrid.vue"
-import BasicCard from "@/components/Basic/BasicCard.vue"
-import MultipleChoice from "@/components/MultipleChoice.vue"
-import { useAdminStore } from '@/stores/adminStore'
-import { useLessonStore, Lesson } from '@/stores/lessonStore'
+import { computed, onMounted, reactive } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import Hero from "../components/blocks/headimage.vue";
+import DraggableGrid from "@/components/DraggableGrid/DraggableGrid.vue";
+import BasicCard from "@/components/Basic/BasicCard.vue";
+import MultipleChoice from "@/components/MultipleChoice.vue";
+import { useAdminStore } from "@/stores/adminStore";
+import { Lesson, useLessonStore } from "@/stores/lessonStore";
+import MediumDropdown from "@/components/Medium/MediumDropdown.vue";
 
-const lessonStore = useLessonStore()
-const adminStore = useAdminStore()
-const route = useRoute()
-const router = useRouter()
+const lessonStore = useLessonStore();
+const adminStore = useAdminStore();
+const route = useRoute();
+const router = useRouter();
 
-const lessonId = String(route.params.id ?? '')
-const isNewDraft = route.query.new === '1'
+const lessonId = String(route.params.id ?? "");
+const isNewDraft = route.query.new === "1";
 
-onMounted(() => lessonStore.load())
+onMounted(() => lessonStore.load());
 
 const local = reactive<Lesson>({
   id: lessonId || crypto.randomUUID(),
-  title: 'Untitled lesson',
+  title: "Untitled lesson",
   blocks: []
-})
+});
 
 // initialize local draft
 function initLocal() {
-  const existing = lessonStore.getLessonById(lessonId)
+  const existing = lessonStore.getLessonById(lessonId);
   if (existing && !isNewDraft) {
-    Object.assign(local, JSON.parse(JSON.stringify(existing)))
+    Object.assign(local, JSON.parse(JSON.stringify(existing)));
   }
 }
-initLocal()
 
-const blocks = computed(() => local.blocks)
-const lessonTitle = computed(() => local.title)
+initLocal();
+
+const blocks = computed(() => local.blocks);
+const lessonTitle = computed(() => local.title);
 
 function addTextBlock() {
   local.blocks.push({
     id: crypto.randomUUID(),
-    title: 'New block',
-    text: 'Edit me'
-  })
+    title: "New block",
+    text: "Edit me"
+  });
+}
+
+function addMultipleChoiceBlock() {
+  local.blocks.push({
+    id: crypto.randomUUID(),
+    title: "New question",
+    text: "Edit me",
+    multipleChoice: {
+      question: "Sample question?",
+      options: ["Option 1", "Option 2", "Option 3"],
+      correctAnswerIndex: 0
+    }
+  });
 }
 
 function removeBlock(index: number) {
-  local.blocks.splice(index, 1)
+  local.blocks.splice(index, 1);
 }
 
 function updateBlockText(index: number, text: string) {
-  const b = local.blocks[index]
-  if (!b) return
-  b.text = text
+  const b = local.blocks[index];
+  if (!b) return;
+  b.text = text;
 }
 
 function handleReorder({ from, to }: { from: number; to: number }) {
-  if (from === to) return
-  const newBlocks = [...local.blocks]
-  const [moved] = newBlocks.splice(from, 1)
-  if (!moved) return
-  newBlocks.splice(to, 0, moved)
-  local.blocks = newBlocks
+  if (from === to) return;
+  const newBlocks = [...local.blocks];
+  const [moved] = newBlocks.splice(from, 1);
+  if (!moved) return;
+  newBlocks.splice(to, 0, moved);
+  local.blocks = newBlocks;
 }
 
 function saveLesson() {
-  lessonStore.saveLesson(JSON.parse(JSON.stringify(local)))
+  lessonStore.saveLesson(JSON.parse(JSON.stringify(local)));
   // alert("Lesson saved!")
+}
+
+function useOptionalText(block: { text?: string }) {
+  return computed<string>({
+    get() {
+      return block.text ?? "";
+    },
+    set(value: string) {
+      block.text = value === "" ? undefined : value;
+    }
+  });
+}
+
+function useOptionalTitle(block: { title?: string }) {
+  return computed<string>({
+    get() {
+      return block.title ?? "";
+    },
+    set(value: string) {
+      block.title = value === "" ? undefined : value;
+    }
+  });
 }
 </script>
 
@@ -79,7 +116,7 @@ function saveLesson() {
           @click="adminStore.toggleAdminMode()"
         >
           <i class="fa fa-edit"></i>
-          {{ adminStore.isAdminMode ? 'Admin' : 'Admin' }}
+          {{ adminStore.isAdminMode ? "Admin" : "Admin" }}
         </button>
 
         <button
@@ -93,7 +130,7 @@ function saveLesson() {
     </component>
 
     <section class="lesson__content">
-      <p>Admin mode: {{ adminStore.isAdminMode }}</p>
+<!--      <p>Admin mode: {{ adminStore.isAdminMode }}</p>-->
 
       <div class="page__wrapper">
         <DraggableGrid
@@ -108,11 +145,11 @@ function saveLesson() {
               :title="blocks[index].title"
             >
               <div v-if="adminStore.isAdminMode">
-          <textarea
-            v-model="blocks[index].text"
-            rows="3"
-            style="width:100%; margin-bottom:8px;"
-          />
+                <textarea
+                  v-model="blocks[index].text"
+                  rows="3"
+                  style="width:100%; margin-bottom:8px;"
+                />
                 <button @click="removeBlock(index)">Delete</button>
               </div>
               <div v-else>
@@ -128,14 +165,25 @@ function saveLesson() {
             </BasicCard>
           </template>
         </DraggableGrid>
-
         <!-- Add Block button -->
-        <div
+        <MediumDropdown
           v-if="adminStore.isAdminMode"
-          class="add-block-wrapper"
-        >
-          <div class="add-block" @click="addTextBlock">
-            +
+          :options="['text', 'Menu item 2', 'Menu item 3']" label="Dropdown"
+          class="add-block"></MediumDropdown>
+
+        <div>
+
+          <div
+            class="add-block"
+            @click="addMultipleChoiceBlock"
+            v-if="adminStore.isAdminMode">
+            + Multiplechoice
+          </div>
+          <div
+            class="add-block"
+            @click="addTextBlock"
+            v-if="adminStore.isAdminMode">
+            + Text
           </div>
         </div>
       </div>
@@ -191,19 +239,17 @@ $text-color: #fdfdfd;
     }
   }
 }
-.add-block-wrapper {
-  margin-top: 12px;
-  width: 100%;
-  max-width: 50rem;
-}
 
 .add-block {
   // reuse card style
   background: $block-bg;
   border: 1px solid $border;
   border-radius: 8px;
+  //width: 100%;
   width: 100%;
-  min-height: 120px;
+  max-width: 50rem;
+  margin-top: 8px;
+  min-height: 95px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -218,8 +264,8 @@ $text-color: #fdfdfd;
   &:hover {
     background: rgba(66, 66, 66, 0.84);
   }
-}
 
+}
 
 
 .lesson {
@@ -271,7 +317,9 @@ $text-color: #fdfdfd;
       align-items: center;
       justify-content: center;
 
-      i { font-size: 0.9rem; }
+      i {
+        font-size: 0.9rem;
+      }
     }
   }
 
