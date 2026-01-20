@@ -41,7 +41,7 @@ function openLesson(id: string) {
         :lesson="lesson"
         @click="openLesson(lesson.id)"
       />
-    </section>
+    </div>
   </main>
 </template>
 
@@ -57,7 +57,7 @@ function openLesson(id: string) {
 }
 .lesson-overview__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 16px;
 }
 </style>

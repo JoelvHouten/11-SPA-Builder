@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import LessonOverview from "@/views/LessonOverview.vue";
 import LessonComponent from "@/views/LessonComponent.vue";
+import LessonCreate from "./views/LessonCreate.vue";
 import ComponentGallery from "@/views/ComponentGallery.vue";
 
 const routes = [
@@ -19,6 +20,12 @@ const routes = [
     name: "lesson",
     component: LessonComponent,
   },
+  { 
+   path: "/lesson/create", 
+   component: LessonCreate 
+  },
+
+  
 ];
 
 const router = createRouter({
