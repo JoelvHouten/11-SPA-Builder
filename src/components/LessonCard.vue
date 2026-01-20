@@ -30,12 +30,16 @@ const emit = defineEmits<{
 
 <style scoped>
 .lesson-card {
-  background: #ffffff;
-  padding: 16px;
+  background: #2f2f2f;
+  padding: 8px;
   border-radius: 8px;
+  color: white;
+  display: flex;
+  flex-direction: column;
 }
 
 .lesson-card__actions {
+  color: black;
   display: flex;
   gap: 8px;
 }
